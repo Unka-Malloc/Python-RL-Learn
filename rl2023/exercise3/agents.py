@@ -203,24 +203,46 @@ class DQN(Agent):
         :param max_timestep (int): maximum timesteps that the training loop will run for
         """
 
-        def epsilon_linear_decay(*args, **kwargs):
+        def epsilon_linear_decay(this_timestep, this_max_timestep, epsilon_start, epsilon_min, exploration_fraction):
             ### PUT YOUR CODE HERE ###
-            raise(NotImplementedError)
+            # raise(NotImplementedError)
 
-        def epsilon_exponential_decay(*args, **kwargs):
+            decay_steps = exploration_fraction * this_max_timestep
+            decay_rate = (epsilon_start - epsilon_min) / decay_steps
+            return max(epsilon_min, epsilon_start - this_timestep * decay_rate)
+
+        def epsilon_exponential_decay(this_timestep, this_max_timestep, epsilon_start, epsilon_min, fraction, epsilon_exponential_decay_factor):
             ### PUT YOUR CODE HERE ###
-            raise(NotImplementedError)
+
+            decay_steps = fraction * this_max_timestep
+            decay_rate = epsilon_exponential_decay_factor
+            return max(epsilon_min, epsilon_start * decay_rate ** (this_timestep / decay_steps))
+
+            # raise(NotImplementedError)
 
         if self.epsilon_decay_strategy == "constant":
             pass
         elif self.epsilon_decay_strategy == "linear":
             # linear decay
             ### PUT YOUR CODE HERE ###
-            self.epsilon = epsilon_linear_decay(...)
+            # self.epsilon = epsilon_linear_decay(...)
+
+            self.epsilon = epsilon_linear_decay(timestep,
+                                                max_timestep,
+                                                self.epsilon_start,
+                                                self.epsilon_min,
+                                                self.exploration_fraction)
         elif self.epsilon_decay_strategy == "exponential":
             # exponential decay
             ### PUT YOUR CODE HERE ###
-            self.epsilon = epsilon_exponential_decay(...)
+            # self.epsilon = epsilon_exponential_decay(...)
+
+            self.epsilon = epsilon_exponential_decay(timestep,
+                                                     max_timestep,
+                                                     self.epsilon_start,
+                                                     self.epsilon_min,
+                                                     self.exploration_fraction,
+                                                     self.epsilon_exponential_decay_factor)
         else:
             raise ValueError("epsilon_decay_strategy must be either 'constant', 'linear' or 'exponential'")
 
@@ -238,7 +260,22 @@ class DQN(Agent):
         :return (sample from self.action_space): action the agent should perform
         """
         ### PUT YOUR CODE HERE ###
-        raise NotImplementedError("Needed for Q3")
+
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+        if explore:
+            # e-greedy
+            if np.random.uniform() < self.epsilon:
+                action = int(self.action_space.sample())
+            else:
+                action = int(Categorical(logits=self.critics_net(Tensor(obs).to(device))).sample())
+        else:
+            # greedy
+            action = int(Categorical(logits=self.critics_net(Tensor(obs).to(device))).sample())
+
+        return action
+
+        # raise NotImplementedError("Needed for Q3")
 
     def update(self, batch: Transition) -> Dict[str, float]:
         """Update function for DQN
@@ -253,8 +290,30 @@ class DQN(Agent):
         :return (Dict[str, float]): dictionary mapping from loss names to loss values
         """
         ### PUT YOUR CODE HERE ###
-        raise NotImplementedError("Needed for Q3")
+        # raise NotImplementedError("Needed for Q3")
+        # q_loss = 0.0
+        # return {"q_loss": q_loss}
+
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
         q_loss = 0.0
+
+        states_tensor = Tensor(batch.states).to(device)
+        actions_tensor = Tensor(batch.actions).long().to(device)
+        next_states_tensor = Tensor(batch.next_states).to(device)
+        rewards_tensor = Tensor(batch.rewards).to(device)
+        done_tensor = Tensor(batch.done).long().to(device)
+
+        q_values = self.critics_net(states_tensor).gather(1, actions_tensor).squeeze(-1)
+
+        next_q_values = self.critics_net(next_states_tensor).max(1)[0]
+        next_q_values[done_tensor] = 0.0
+
+        target_q_values = rewards_tensor + self.gamma * next_q_values.unsqueeze(1)
+        target_q_values = target_q_values.view_as(q_values)
+
+        q_loss = torch.nn.functional.mse_loss(q_values, target_q_values.detach()).item()
+
         return {"q_loss": q_loss}
 
 
@@ -341,7 +400,15 @@ class Reinforce(Agent):
         :return (sample from self.action_space): action the agent should perform
         """
         ### PUT YOUR CODE HERE ###
-        raise NotImplementedError("Needed for Q3")
+        # raise NotImplementedError("Needed for Q3")
+
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+        action = Categorical(self.policy(Tensor(obs).to(device))).sample()
+
+        action = action.item()
+
+        return action
 
     def update(
         self, rewards: List[float], observations: List[np.ndarray], actions: List[int],
@@ -357,6 +424,7 @@ class Reinforce(Agent):
             losses
         """
         ### PUT YOUR CODE HERE ###
-        raise NotImplementedError("Needed for Q3")
+        # raise NotImplementedError("Needed for Q3")
         p_loss = 0.0
+
         return {"p_loss": p_loss}
