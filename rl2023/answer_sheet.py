@@ -17,7 +17,7 @@ def question2_1() -> str:
     b) 0.8
     return: (str): your answer as a string. accepted strings: "a" or "b"
     """
-    answer = ""  # TYPE YOUR ANSWER HERE "a" or "b"
+    answer = "a"  # TYPE YOUR ANSWER HERE "a" or "b"
     return answer
 
 
@@ -29,7 +29,7 @@ def question2_2() -> str:
     b) 0.8
     return: (str): your answer as a string. accepted strings: "a" or "b"
     """
-    answer = ""  # TYPE YOUR ANSWER HERE "a" or "b"
+    answer = "a"  # TYPE YOUR ANSWER HERE "a" or "b"
     return answer
 
 
@@ -42,7 +42,7 @@ def question2_3() -> str:
     b) First-Visit Monte Carlo
     return: (str): your answer as a string. accepted strings: "a" or "b"
     """
-    answer = ""  # TYPE YOUR ANSWER HERE "a" or "b"
+    answer = "a"  # TYPE YOUR ANSWER HERE "a" or "b"
     return answer
 
 
@@ -53,7 +53,7 @@ def question2_4() -> str:
     by [Q-learning / First-Visit Monte Carlo] when compared to the other algorithm.
     return: answer (str): your answer as a string (100 words max)
     """
-    answer = "fejofse;ioj kfpoewofe"  # TYPE YOUR ANSWER HERE (100 words max)
+    answer = "The Q-Learning algorithm estimates future rewards by updating the Q-value for each state-action pair. In contrast, the Monte Carlo method sums the reward values of each state-action pair in a episode and estimates the weighted average, thus the changing of Gamma value has less impact on its estimation."  # TYPE YOUR ANSWER HERE (100 words max)
     return answer
 
 
@@ -70,7 +70,7 @@ def question3_1() -> str:
     c) 6e-3
     return: (str): your answer as a string. accepted strings: "a", "b" or "c"
     """
-    answer = ""  # TYPE YOUR ANSWER HERE "a", "b" or "c"
+    answer = "c"  # TYPE YOUR ANSWER HERE "a", "b" or "c"
     return answer
 
 
@@ -84,7 +84,7 @@ def question3_2() -> str:
     c) 0.01
     return: (str): your answer as a string. accepted strings: "a", "b" or "c"
     """
-    answer = ""  # TYPE YOUR ANSWER HERE "a", "b" or "c"
+    answer = "c"  # TYPE YOUR ANSWER HERE "a", "b" or "c"
     return answer
 
 
@@ -98,7 +98,7 @@ def question3_3() -> str:
     c) 0.001
     return: (str): your answer as a string. accepted strings: "a", "b" or "c"
     """
-    answer = ""  # TYPE YOUR ANSWER HERE "a", "b" or "c"
+    answer = "c"  # TYPE YOUR ANSWER HERE "a", "b" or "c"
     return answer
 
 
@@ -114,14 +114,14 @@ def question3_4() -> str:
     e) it depends on the number of training timesteps
     return: (str): your answer as a string. accepted strings: "a", "b", "c", "d" or "e"
     """
-    answer = ""  # TYPE YOUR ANSWER HERE "a", "b", "c", "d" or "e"
+    answer = "b"  # TYPE YOUR ANSWER HERE "a", "b", "c", "d" or "e"
     return answer
 
 
 def question3_5() -> str:
     """
     (Multiple choice question):
-    What would the value of epsilon be at the end of  training when employing an exponential decay strategy
+    What would the value of epsilon be at the end of training when employing an exponential decay strategy
     with epsilon decay set to 0.990?
     a) 0.990
     b) 1.0
@@ -130,7 +130,7 @@ def question3_5() -> str:
     e) it depends on the number of training timesteps
     return: (str): your answer as a string. accepted strings: "a", "b", "c", "d" or "e"
     """
-    answer = ""  # TYPE YOUR ANSWER HERE "a", "b", "c", "d" or "e"
+    answer = "a"  # TYPE YOUR ANSWER HERE "a", "b", "c", "d" or "e"
     return answer
 
 

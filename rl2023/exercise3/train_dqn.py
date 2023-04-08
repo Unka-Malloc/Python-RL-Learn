@@ -16,10 +16,10 @@ from rl2023.exercise3.replay import ReplayBuffer
 from rl2023.util.hparam_sweeping import generate_hparam_configs
 from rl2023.util.result_processing import Run
 
-RENDER = True # FALSE FOR FASTER TRAINING / TRUE TO VISUALIZE ENVIRONMENT DURING EVALUATION
+RENDER = False # FALSE FOR FASTER TRAINING / TRUE TO VISUALIZE ENVIRONMENT DURING EVALUATION
 SWEEP = False # TRUE TO SWEEP OVER POSSIBLE HYPERPARAMETER CONFIGURATIONS
 NUM_SEEDS_SWEEP = 10 # NUMBER OF SEEDS TO USE FOR EACH HYPERPARAMETER CONFIGURATION
-SWEEP_SAVE_RESULTS = True # TRUE TO SAVE SWEEP RESULTS TO A FILE
+SWEEP_SAVE_RESULTS = False # TRUE TO SAVE SWEEP RESULTS TO A FILE
 SWEEP_SAVE_ALL_WEIGTHS = False # TRUE TO SAVE ALL WEIGHTS FROM EACH SEED
 ENV = "CARTPOLE" # "ACROBOT" is also possible if you uncomment the corresponding code, but is not assessed for DQN.
 
@@ -32,10 +32,11 @@ CARTPOLE_CONFIG = {
     "hidden_size": (256, 256),
     "target_update_freq": 10,
     "batch_size": 64,
-    "epsilon_decay_strategy": "constant", #"constant" or "linear" or "exponential"
+    "epsilon_decay_strategy": "exponential", #"constant" or "linear" or "exponential"
     "epsilon_start": .25,
+    # "epsilon_start": 1.0,
     "epsilon_min": 0.04, #only used in linear and exponential decay strategies
-    "epsilon_decay": None, #For exponential epsilon decay
+    "epsilon_decay": 0.990, #For exponential epsilon decay
     "exploration_fraction": None, # For linear epsilon decay, fraction of training time at which epsilon=epsilon_min
     "buffer_capacity": int(1e6),
     "plot_loss": False, # SET TRUE FOR 3.3 (Understanding the Loss)

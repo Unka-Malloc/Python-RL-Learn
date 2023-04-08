@@ -208,16 +208,21 @@ class DQN(Agent):
             # raise(NotImplementedError)
 
             decay_steps = exploration_fraction * this_max_timestep
-            decay_rate = (epsilon_start - epsilon_min) / decay_steps
-            return max(epsilon_min, epsilon_start - this_timestep * decay_rate)
+            decay_factor = (epsilon_start - epsilon_min) / decay_steps
+            if this_timestep <= decay_steps:
+                return max(epsilon_min,
+                           epsilon_start - decay_factor * this_timestep)
+            else:
+                return epsilon_min
 
-        def epsilon_exponential_decay(this_timestep, this_max_timestep, epsilon_start, epsilon_min, fraction, epsilon_exponential_decay_factor):
+        def epsilon_exponential_decay(this_timestep, this_max_timestep, epsilon_start, epsilon_min, epsilon_exponential_decay_factor):
             ### PUT YOUR CODE HERE ###
 
-            decay_steps = fraction * this_max_timestep
-            decay_rate = epsilon_exponential_decay_factor
-            return max(epsilon_min, epsilon_start * decay_rate ** (this_timestep / decay_steps))
-
+            if this_timestep < this_max_timestep:
+                return max(epsilon_min,
+                           epsilon_start * epsilon_exponential_decay_factor ** (this_timestep / this_max_timestep))
+            else:
+                return epsilon_min
             # raise(NotImplementedError)
 
         if self.epsilon_decay_strategy == "constant":
@@ -232,6 +237,7 @@ class DQN(Agent):
                                                 self.epsilon_start,
                                                 self.epsilon_min,
                                                 self.exploration_fraction)
+
         elif self.epsilon_decay_strategy == "exponential":
             # exponential decay
             ### PUT YOUR CODE HERE ###
@@ -241,8 +247,8 @@ class DQN(Agent):
                                                      max_timestep,
                                                      self.epsilon_start,
                                                      self.epsilon_min,
-                                                     self.exploration_fraction,
                                                      self.epsilon_exponential_decay_factor)
+
         else:
             raise ValueError("epsilon_decay_strategy must be either 'constant', 'linear' or 'exponential'")
 
@@ -261,19 +267,15 @@ class DQN(Agent):
         """
         ### PUT YOUR CODE HERE ###
 
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
         if explore:
             # e-greedy
             if np.random.uniform() < self.epsilon:
-                action = int(self.action_space.sample())
+                return int(self.action_space.sample())
             else:
-                action = int(Categorical(logits=self.critics_net(Tensor(obs).to(device))).sample())
+                return int(torch.argmax(self.critics_net(Tensor(obs))))
         else:
             # greedy
-            action = int(Categorical(logits=self.critics_net(Tensor(obs).to(device))).sample())
-
-        return action
+            return int(torch.argmax(self.critics_net(Tensor(obs))))
 
         # raise NotImplementedError("Needed for Q3")
 
@@ -294,25 +296,35 @@ class DQN(Agent):
         # q_loss = 0.0
         # return {"q_loss": q_loss}
 
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
         q_loss = 0.0
 
-        states_tensor = Tensor(batch.states).to(device)
-        actions_tensor = Tensor(batch.actions).long().to(device)
-        next_states_tensor = Tensor(batch.next_states).to(device)
-        rewards_tensor = Tensor(batch.rewards).to(device)
-        done_tensor = Tensor(batch.done).long().to(device)
+        states_tensor = Tensor(batch.states)
+        actions_tensor = Tensor(batch.actions).long()
+        next_states_tensor = Tensor(batch.next_states)
+        rewards_tensor = Tensor(batch.rewards)
+        done_tensor = Tensor(batch.done).long()
 
-        q_values = self.critics_net(states_tensor).gather(1, actions_tensor).squeeze(-1)
+        self.critics_optim.zero_grad()
 
-        next_q_values = self.critics_net(next_states_tensor).max(1)[0]
-        next_q_values[done_tensor] = 0.0
+        q_values = self.critics_net(states_tensor).gather(1, actions_tensor)
 
-        target_q_values = rewards_tensor + self.gamma * next_q_values.unsqueeze(1)
-        target_q_values = target_q_values.view_as(q_values)
+        next_q_values, _ = torch.max(self.critics_target(next_states_tensor), dim=1)
+        next_q_values = next_q_values.unsqueeze(1)
 
-        q_loss = torch.nn.functional.mse_loss(q_values, target_q_values.detach()).item()
+        target_q_values = rewards_tensor + self.gamma * (1 - done_tensor) * next_q_values
+
+        loss = torch.nn.functional.mse_loss(q_values, target_q_values)
+
+        loss.backward()
+
+        self.critics_optim.step()
+
+        q_loss = loss.item()
+
+        if self.update_counter % self.target_update_freq == 0:
+            self.critics_target.load_state_dict(self.critics_net.state_dict())
+
+        self.update_counter += 1
 
         return {"q_loss": q_loss}
 
@@ -402,9 +414,7 @@ class Reinforce(Agent):
         ### PUT YOUR CODE HERE ###
         # raise NotImplementedError("Needed for Q3")
 
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-        action = Categorical(self.policy(Tensor(obs).to(device))).sample()
+        action = Categorical(self.policy(Tensor(obs))).sample()
 
         action = action.item()
 
@@ -426,5 +436,23 @@ class Reinforce(Agent):
         ### PUT YOUR CODE HERE ###
         # raise NotImplementedError("Needed for Q3")
         p_loss = 0.0
+
+        log_probs = Categorical(self.policy(Tensor(np.array(observations)))).log_prob(Tensor(np.array(actions)))
+
+        returns = []
+        discounted_reward = 0
+        for reward in reversed(rewards):
+            discounted_reward = reward + self.gamma * discounted_reward
+            returns.insert(0, discounted_reward)
+
+        returns = Tensor(np.array(returns))
+
+        p_loss = -(log_probs * returns).mean()
+
+        self.policy_optim.zero_grad()
+        p_loss.backward()
+        self.policy_optim.step()
+
+        p_loss = p_loss.item()
 
         return {"p_loss": p_loss}

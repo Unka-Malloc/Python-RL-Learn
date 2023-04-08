@@ -8,7 +8,7 @@ from rl2023.exercise2.utils import evaluate
 CONFIG = {
     "eval_freq": 1000, # keep this unchanged
     "alpha": 0.05,
-    "epsilon": 0.9,
+    "epsilon": 0.6,
     "gamma": 0.99,
 }
 CONFIG.update(CONSTANTS)
