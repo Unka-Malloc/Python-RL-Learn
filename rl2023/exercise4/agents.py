@@ -90,17 +90,12 @@ class DDPG(Agent):
         self.policy_optim = Adam(self.actor.parameters(), lr=policy_learning_rate, eps=1e-3)
         self.critic_optim = Adam(self.critic.parameters(), lr=critic_learning_rate, eps=1e-3)
 
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-        self.critic.to(self.device)
-        self.actor.to(self.device)
-        self.critic_target.to(self.device)
-        self.actor_target.to(self.device)
-
-        # print("critic on cuda:", next(self.critic.parameters()).is_cuda)
-        # print("actor on cuda:", next(self.actor.parameters()).is_cuda)
-        # print("critic_target on cuda:", next(self.critic_target.parameters()).is_cuda)
-        # print("actor_target on cuda:", next(self.actor_target.parameters()).is_cuda)
+        # self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        #
+        # self.critic.to(self.device)
+        # self.actor.to(self.device)
+        # self.critic_target.to(self.device)
+        # self.actor_target.to(self.device)
 
         # ############################################# #
         # WRITE ANY HYPERPARAMETERS YOU MIGHT NEED HERE #
@@ -194,14 +189,18 @@ class DDPG(Agent):
 
         if explore:
             # e-greedy
-            action = self.actor(torch.tensor(obs).to(self.device)) + self.noise.sample().to(self.device)
+            # action = self.actor(torch.tensor(obs).to(self.device)) + self.noise.sample().to(self.device)
+            action = self.actor(torch.tensor(obs)) + self.noise.sample()
         else:
             # greedy
-            action = self.actor(torch.tensor(obs).to(self.device))
+            # action = self.actor(torch.tensor(obs).to(self.device))
+            action = self.actor(torch.tensor(obs))
 
         action = torch.clip(action,
-                            torch.tensor(self.lower_action_bound).to(self.device),
-                            torch.tensor(self.upper_action_bound).to(self.device))
+                            # torch.tensor(self.lower_action_bound).to(self.device),
+                            # torch.tensor(self.upper_action_bound).to(self.device))
+                            torch.tensor(self.lower_action_bound),
+                            torch.tensor(self.upper_action_bound))
 
         return action.cpu().detach().numpy()
 
@@ -223,56 +222,40 @@ class DDPG(Agent):
         q_loss = 0.0
         p_loss = 0.0
 
-        states_tensor = batch.states.to(self.device)
-        next_states_tensor = batch.next_states.to(self.device)
-        actions_tensor = batch.actions.to(self.device)
-        rewards_tensor = batch.rewards.to(self.device)
-        done_tensor = batch.done.to(self.device)
+        # states_tensor = batch.states.to(self.device)
+        # next_states_tensor = batch.next_states.to(self.device)
+        # actions_tensor = batch.actions.to(self.device)
+        # rewards_tensor = batch.rewards.to(self.device)
+        # done_tensor = batch.done.to(self.device)
 
-        # print(states_tensor.device)
-        # print(next_states_tensor.device)
-        # print(actions_tensor.device)
-        # print(rewards_tensor.device)
-        # print(done_tensor.device)
-        # raise NotImplementedError
+        states_tensor = batch.states
+        next_states_tensor = batch.next_states
+        actions_tensor = batch.actions
+        rewards_tensor = batch.rewards
+        done_tensor = batch.done
 
         self.critic_optim.zero_grad()
         self.policy_optim.zero_grad()
 
         # Update critic
-        q_values = self.critic(torch.cat((states_tensor, actions_tensor), dim=1).to(self.device))
+        q_values = self.critic(torch.cat((states_tensor, actions_tensor), dim=1))
         with torch.no_grad():
             next_actions = self.actor_target(next_states_tensor)
-            q_targets_next = self.critic_target(torch.cat((next_states_tensor, next_actions), dim=1).to(self.device))
+            q_targets_next = self.critic_target(torch.cat((next_states_tensor, next_actions), dim=1))
             q_targets = rewards_tensor + self.gamma * (1 - done_tensor) * q_targets_next
         critic_loss = F.mse_loss(q_values, q_targets)
         critic_loss.backward()
         self.critic_optim.step()
 
-        # print(q_values.device)
-        # print(next_actions.device)
-        # print(q_targets_next.device)
-        # print(q_targets.device)
-        # print(critic_loss.device)
-        # raise NotImplementedError
-
         # Update actor
         actions_pred = self.actor(states_tensor)
-        actor_loss = -self.critic(torch.cat((states_tensor, actions_pred), dim=1).to(self.device)).mean()
+        actor_loss = -self.critic(torch.cat((states_tensor, actions_pred), dim=1)).mean()
         actor_loss.backward()
         self.policy_optim.step()
-
-        # print(actions_pred.device)
-        # print(actor_loss.device)
-        # raise NotImplementedError
 
         # Update target networks with soft update
         self.critic_target.soft_update(self.critic, self.tau)
         self.actor_target.soft_update(self.actor, self.tau)
-
-        # print("critic on cuda:", next(self.critic_target.parameters()).is_cuda)
-        # print("actor on cuda:", next(self.actor_target.parameters()).is_cuda)
-        # raise NotImplementedError
 
         q_loss = critic_loss.item()
         p_loss = actor_loss.item()

@@ -20,19 +20,18 @@ RENDER = False
 SWEEP = False # TRUE TO SWEEP OVER POSSIBLE HYPERPARAMETER CONFIGURATIONS
 NUM_SEEDS_SWEEP = 10 # NUMBER OF SEEDS TO USE FOR EACH HYPERPARAMETER CONFIGURATION
 SWEEP_SAVE_RESULTS = True # TRUE TO SAVE SWEEP RESULTS TO A FILE
-SWEEP_SAVE_ALL_WEIGTHS = False # TRUE TO SAVE ALL WEIGHTS FROM EACH SEED
+SWEEP_SAVE_ALL_WEIGTHS = True # TRUE TO SAVE ALL WEIGHTS FROM EACH SEED
 ENV = "BIPEDAL" # "ACROBOT" is also possible if you uncomment the corresponding code, but is not assessed for DQN.
 
 # IN EXERCISE 5 YOU SHOULD TUNE PARAMETERS IN THIS CONFIG ONLY
 BIPEDAL_CONFIG = {
-    "policy_learning_rate": 1e-4,
-    "critic_learning_rate": 1e-3,
-    "critic_hidden_size": [64, 64],
-    "policy_hidden_size": [64, 64],
+    "policy_learning_rate": 0.001,
+    "critic_learning_rate": 0.01,
+    "critic_hidden_size": [300, 400],
+    "policy_hidden_size": [300, 400],
     "gamma": 0.99,
-    "tau": 0.2,
+    "tau": 0.1,
     "batch_size": 64,
-    "gamma": 0.99,
     "buffer_capacity": int(1e6),
 }
 BIPEDAL_CONFIG.update(BIPEDAL_CONSTANTS)
