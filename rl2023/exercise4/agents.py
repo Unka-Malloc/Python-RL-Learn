@@ -116,6 +116,8 @@ class DDPG(Agent):
         # WRITE ANY AGENT PARAMETERS HERE #
         # ############################### #
 
+        self.ACTION_SIZE = ACTION_SIZE
+
         self.saveables.update(
             {
                 "actor": self.actor,
@@ -169,6 +171,7 @@ class DDPG(Agent):
         :param max_timestep (int): maximum timesteps that the training loop will run for
         """
         ### PUT YOUR CODE HERE ###
+
         pass
 
     def act(self, obs: np.ndarray, explore: bool):
@@ -237,7 +240,6 @@ class DDPG(Agent):
         self.critic_optim.zero_grad()
         self.policy_optim.zero_grad()
 
-        # Update critic
         q_values = self.critic(torch.cat((states_tensor, actions_tensor), dim=1))
         with torch.no_grad():
             next_actions = self.actor_target(next_states_tensor)
@@ -247,13 +249,11 @@ class DDPG(Agent):
         critic_loss.backward()
         self.critic_optim.step()
 
-        # Update actor
         actions_pred = self.actor(states_tensor)
         actor_loss = -self.critic(torch.cat((states_tensor, actions_pred), dim=1)).mean()
         actor_loss.backward()
         self.policy_optim.step()
 
-        # Update target networks with soft update
         self.critic_target.soft_update(self.critic, self.tau)
         self.actor_target.soft_update(self.actor, self.tau)
 

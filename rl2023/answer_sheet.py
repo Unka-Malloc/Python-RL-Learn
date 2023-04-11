@@ -143,7 +143,7 @@ def question3_6() -> str:
     strategy you implemented).
     return: answer (str): your answer as a string (100 words max)
     """
-    answer = ""  # TYPE YOUR ANSWER HERE (100 words max)
+    answer = "Based on the linear decay strategy, sampling can be done uniformly within the range from the maximum value to the minimum value. However, with the exponential decay strategy, sampling can only be done between the maximum value and the decay rate. Choosing a proper decay rate is difficult, so the linear decay strategy which can explore a larger range usually performs better."  # TYPE YOUR ANSWER HERE (100 words max)
     return answer
 
 
@@ -154,7 +154,7 @@ def question3_7() -> str:
     (where we usually see a fairly steady decrease of the loss throughout training)
     return: answer (str): your answer as a string (150 words max)
     """
-    answer = ""  # TYPE YOUR ANSWER HERE (150 words max)
+    answer = "During the training, the target states is always changing, and the target network is updated periodically. While the reward and the target Q value increase, the neural network will fall behind its predictions. Therefore, the MSE loss between the real Q value and the target Q value will be accumulated. "  # TYPE YOUR ANSWER HERE (150 words max)
     return answer
 
 
@@ -165,7 +165,7 @@ def question3_8() -> str:
     the DQN training process.
     return: answer (str): your answer as a string (100 words max)
     """
-    answer = ""  # TYPE YOUR ANSWER HERE (100 words max)
+    answer = "The reason is that the target network updates its parameters periodically. When the target network is updated, it will make completely different predictions. This results in a significant change in the target Q value. At this time, the critic network still calculates the Q value based on the previous session, so there is a peak in MSE Loss."  # TYPE YOUR ANSWER HERE (100 words max)
     return answer
 
 
@@ -180,5 +180,5 @@ def question5_1() -> str:
     the best performance of your agents
     return: answer (str): your answer as a string (200 words max)
     """
-    answer = ""  # TYPE YOUR ANSWER HERE (200 words max)
+    answer = "Learning Rate: Grid search in [0.1, 0.01, 0.001, 0.0001, 0.00001] for critic net and [0.01, 0.001, 0.0001, 0.00001, 0.000001] for actor net. Hidden Size: Grid search, the same structure for critic net and policy net, starts with 64 and multiply by 2 each step, keep the first layer twice as second layer, i.e. [(128, 64), (256, 128), (512, 256)]. Gamma: Grid search in [0.99, 0.98, 0.97, 0.96, 0.95]. Tau: Grid search in [0.1, 0.01, 0.001]."  # TYPE YOUR ANSWER HERE (200 words max)
     return answer

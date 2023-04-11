@@ -1,7 +1,7 @@
 from rl2023.answer_sheet import *
 
 if __name__ == "__main__":
-    print(len(question2_4()))
+    print(question5_1())
 
     """
     DQN - linear decay
@@ -39,7 +39,11 @@ if __name__ == "__main__":
     Finished run with hyperparameters critic_hidden_size:[64, 64]_policy_hidden_size:[32, 32]. Mean final score: -127.81469187623803 +- nan
     
     Finished run with hyperparameters critic_hidden_size:[64, 64]_policy_hidden_size:[64, 64]. Mean final score: -124.42750264230479 +- nan
-   
+    """
+
+    """
+    Q4 - 128, 64, 32
+    
     T:\IDE\Anaconda\envs\rl2023\python.exe T:/WorkSpace/Python-RL-Learn/rl2023/exercise4/train_ddpg.py
     T:\IDE\Anaconda\envs\rl2023\lib\site-packages\gym\core.py:317: DeprecationWarning: WARN: Initializing wrapper in old step API which returns one bool instead of two. It is recommended to set `new_step_api=True` to use new step API. This will be the default behaviour in future.
       deprecation(
@@ -66,7 +70,50 @@ if __name__ == "__main__":
      95%|█████████▌| 380028/400000 [1:04:35<02:15, 146.99it/s]Evaluation at timestep 380028 returned a mean returns of -46.2872863639572
     400487it [1:07:15, 99.23it/s] 
     Evaluation at timestep 400487 returned a mean returns of -36.80751898938511
-    Saving to:  bipedal_q4_latest.pt
+    Saving to:  bipedal_q4_latest_256_128_64.pt
+    
+    Process finished with exit code 0
+    """
+
+    """
+    Q4 - 256 - 128 - 64
+    
+    
+    """
+
+    """
+    Q5
+    "policy_learning_rate": 0.001,
+    "critic_learning_rate": 0.01,
+    "critic_hidden_size": [512, 256],
+    "policy_hidden_size": [128, 64],
+    "gamma": 0.99,
+    "tau": 0.05,
+    "batch_size": 64,
+    "buffer_capacity": int(1e6),
+    
+      5%|▌         | 20180/400000 [03:13<1:02:06, 101.92it/s]Evaluation at timestep 20180 returned a mean returns of -120.68661196951321
+     10%|█         | 41311/400000 [08:19<57:02, 104.79it/s]Evaluation at timestep 41311 returned a mean returns of -152.75433206631394
+     15%|█▌        | 61381/400000 [13:13<53:58, 104.55it/s]Evaluation at timestep 61381 returned a mean returns of -126.30957223861911
+     20%|██        | 80040/400000 [18:00<54:23, 98.04it/s]Evaluation at timestep 80040 returned a mean returns of -127.15745696018946
+     25%|██▌       | 100096/400000 [23:00<51:23, 97.25it/s]Evaluation at timestep 100096 returned a mean returns of -111.31245713921216
+     30%|███       | 121240/400000 [28:11<47:14, 98.34it/s]Evaluation at timestep 121240 returned a mean returns of -96.68243923076248
+     35%|███▌      | 140050/400000 [31:28<44:27, 97.44it/s]Evaluation at timestep 140050 returned a mean returns of -103.81251472669904
+     40%|████      | 160064/400000 [35:15<40:50, 97.89it/s]Evaluation at timestep 160064 returned a mean returns of -122.07149349404574
+     45%|████▌     | 180277/400000 [40:17<37:15, 98.30it/s]Evaluation at timestep 180277 returned a mean returns of 10.77583355440257
+     50%|█████     | 200680/400000 [44:01<35:06, 94.63it/s]Evaluation at timestep 200680 returned a mean returns of -70.91281600940457
+     55%|█████▌    | 220042/400000 [47:35<30:34, 98.07it/s]Evaluation at timestep 220042 returned a mean returns of -117.06775787203969
+     60%|██████    | 240402/400000 [51:13<27:07, 98.05it/s]Evaluation at timestep 240402 returned a mean returns of -79.77584254974002
+     65%|██████▌   | 260891/400000 [55:41<23:33, 98.42it/s]Evaluation at timestep 260891 returned a mean returns of 86.34149860297778
+     70%|███████   | 280117/400000 [59:18<20:41, 96.59it/s]Evaluation at timestep 280117 returned a mean returns of -62.35909512693972
+     75%|███████▌  | 300510/400000 [1:04:33<17:35, 94.29it/s]Evaluation at timestep 300510 returned a mean returns of -128.91046796575256
+     80%|████████  | 320094/400000 [1:08:00<13:40, 97.43it/s]Evaluation at timestep 320094 returned a mean returns of -93.75611479824389
+     85%|████████▌ | 340344/400000 [1:12:02<10:13, 97.25it/s]Evaluation at timestep 340344 returned a mean returns of 34.24199216031719
+     90%|█████████ | 360032/400000 [1:15:45<06:53, 96.76it/s]Evaluation at timestep 360032 returned a mean returns of -50.44645453609407
+     95%|█████████▌| 380077/400000 [1:20:23<03:23, 97.83it/s]Evaluation at timestep 380077 returned a mean returns of 230.66787024982844
+    400170it [1:23:55, 79.48it/s] 
+    Evaluation at timestep 400170 returned a mean returns of -56.00242923915105
+    Saving to:  bipedal_q5_latest.pt
     
     Process finished with exit code 0
     """

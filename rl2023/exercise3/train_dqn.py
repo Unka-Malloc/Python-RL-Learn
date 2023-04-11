@@ -36,7 +36,7 @@ CARTPOLE_CONFIG = {
     "epsilon_start": .25,
     # "epsilon_start": 1.0,
     "epsilon_min": 0.04, #only used in linear and exponential decay strategies
-    "epsilon_decay": 0.990, #For exponential epsilon decay
+    "epsilon_decay": 0.001, #For exponential epsilon decay
     "exploration_fraction": None, # For linear epsilon decay, fraction of training time at which epsilon=epsilon_min
     "buffer_capacity": int(1e6),
     "plot_loss": False, # SET TRUE FOR 3.3 (Understanding the Loss)
